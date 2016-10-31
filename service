@@ -1,0 +1,53 @@
+
+# This script is modifed for Xen orchestra startup script for FreeBSD.
+
+#!/bin/sh
+
+# PROVIDE: forever
+# REQUIRE: NETWORKING SERVERS DAEMON
+# BEFORE:  LOGIN
+# KEYWORD: shutdown
+
+# Taken from http://habrahabr.ru/post/137857/
+
+. /etc/rc.subr
+
+name="xoweb"
+forever="/usr/local/bin/node /usr/local/bin/forever"
+workdir="/apps/xo-server/bin" # Modify according your path
+script="xo-server" # Modify according your path
+
+rcvar=xoweb_enable 
+extra_commands="status"
+
+start_cmd="start"
+status_cmd="status"
+stop_cmd="stop"
+restart_cmd="restart"
+
+load_rc_config $name
+eval "${rcvar}=\${${rcvar}:-'NO'}"
+
+HOME=/var/run/forever
+NODE_ENV=production
+start()
+{
+  su -m nodejs -c "exec ${forever} start -a -l /var/log/$name.log -o /dev/null -e /var/log/$name.log -p /var/run/forever --sourceDir ${workdir} ${script}"
+}
+
+status()
+{
+  su -m nodejs -c "exec ${forever} list"
+}
+
+stop()
+{
+        su -m nodejs -c "exec ${forever} stop ${workdir}/${script}"
+}
+
+restart()
+{
+  su -m nodejs -c "exec ${forever} restart  ${workdir}/${script}"
+}
+
+run_rc_command "$1"
