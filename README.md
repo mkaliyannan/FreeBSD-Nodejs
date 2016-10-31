@@ -3,7 +3,7 @@
 I modified this script for Node JS xen orchestra startup service. FreeBSD doesn't have the forever-service. if anyone wish to create startup for any nodejs use this script. It would be useful and saves your time.
 
 
-Pre-requiests:
+required package:
 
 forever package.  ( npm install forever -g) 
 
